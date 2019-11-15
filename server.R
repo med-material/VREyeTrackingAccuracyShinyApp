@@ -6,9 +6,7 @@ library(RMySQL)
 
 # Server method
 server = function(input, output) {
-  output$text = renderText({
-    textInit()
-  })
+  
 }
 
 # Initialize server
