@@ -28,10 +28,9 @@ ui = fluidPage(
              selected = "All Participants"
            )
     ),
-    # Active query
+    # Table for circle
     column(width = 9,
-      uiOutput("ui_query"),
-      uiOutput("ui_circles")
+           uiOutput("ui_circles")
     )
   )
 )

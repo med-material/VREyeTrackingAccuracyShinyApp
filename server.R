@@ -64,10 +64,6 @@ server = function(input, output) {
       htmlRenderTarget(cell)
     }
   })
-  # Output query
-  output$ui_query = renderUI({
-    render()
-  })
   # Output circle
   output$ui_circles = renderUI({
     renderCircle()
