@@ -75,6 +75,30 @@ htmlRenderTarget = function(cell) {
   )
 }
 
+# Draw grid no target selected
+htmlRenderTargets = function(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r) {
+  return(
+    tags$table(
+      class = "table_setting",
+      tags$tr(
+        cell_upper_l,
+        cell_upper_c,
+        cell_upper_r
+      ),
+      tags$tr(
+        cell_middle_l,
+        cell_middle_c,
+        cell_middle_r
+      ),
+      tags$tr(
+        cell_bottom_l,
+        cell_bottom_c,
+        cell_bottom_r
+      )
+    )
+  )
+}
+
 # Draw cell from the grid
 drawCell = function(target = "UpperLeft", participant = "All Participants") {
   if (participant == "All Participants") {
