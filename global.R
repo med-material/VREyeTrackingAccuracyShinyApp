@@ -37,6 +37,25 @@ getParticipants = function() {
   return(tmp_participants)
 }
 
+# Query builder, to do all circle queries
+queryBuilder = function(query_number = NULL, target = NULL, participant = NULL) {
+  # Basic query
+  tmp_query = paste('SELECT AVG(EyeTrackAccuracy) FROM eye_tracking', sep = ' ')
+  # Build queries
+  switch(query_number,
+         # Target and no participant , '"BottomCenter"'
+         return(paste(tmp_query, ' WHERE CircleName = "', target, '"', sep = '')),
+         # Target and participant
+         return(paste(tmp_query, ' WHERE CircleName = "', target, '" AND ParticipantNumber = ', participant, sep = '')),
+         # No Target and participant
+         return(paste(tmp_query, ' WHERE ParticipantNumber = ', participant, sep = '')),
+         # Default query
+         return(tmp_query)
+  )
+  # Return value
+  return(tmp_query)
+}
+
 # Disconnect db
 onStop(function() {
   dbDisconnect(connection)

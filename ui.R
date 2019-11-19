@@ -25,6 +25,10 @@ ui = fluidPage(
              choices = c("All Participants", getParticipants()),
              selected = "All Participants"
            )
+    ),
+    # Active query
+    column(width = 9,
+      uiOutput("ui_query")
     )
   )
 )
