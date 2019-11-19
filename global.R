@@ -56,6 +56,64 @@ queryBuilder = function(query_number = NULL, target = NULL, participant = NULL) 
   return(tmp_query)
 }
 
+# Get average from a query
+average = function(query = NULL) {
+  tmp_average = dbGetQuery(connection, query)
+  return(tmp_average[["AVG(EyeTrackAccuracy)"]])
+}
+
+# Draw grid target selected
+htmlRenderTarget = function(cell) {
+  return(
+    tags$table(
+      class = "table_setting",
+      tags$tr(
+        cell
+      )
+    )
+  )
+}
+
+# Draw cell from the grid
+drawCell = function(target = "UpperLeft", participant = "All Participants") {
+  if (participant == "All Participants") {
+    circle_size = average(queryBuilder(query_number = 1, target = target))
+  } else {
+    circle_size = average(queryBuilder(query_number = 2, target = target, participant = participant))
+  }
+  circle_size = circle_size * 200
+  circle_max_size = 200
+  red_coef = 0.47
+  red_max = 254
+  red_color = as.integer(red_coef*(circle_size-circle_max_size)+red_max)
+  green_coef = -1.025
+  green_max = 50
+  green_color = as.integer(green_coef*(circle_size-circle_max_size)+green_max)
+  blue_coef = 0.245
+  blue_max = 49
+  blue_color = as.integer(blue_coef*(circle_size-circle_max_size)+blue_max)
+  color = paste(red_color, ', ', green_color, ', ', blue_color, sep = '')
+  tmp_style = paste('border-color: rgb(', color, '); background-color: rgba(', color, ', 0.2);', sep = '')
+  return(
+    tags$td(
+      class = "outer_circle",
+      style = tmp_style,
+      drawCircle(width = circle_size, color = color)
+    )
+  )
+}
+
+# Draw circle from a cell
+drawCircle = function(width = 1, color = "black") {
+  tmp_style = paste("background-color: rgb(", color, "); height: ", width, "px; width: ", width, "px;", sep = '')
+  return(
+    tags$div(
+      class = "inner_circle",
+      style = tmp_style
+    )
+  )
+}
+
 # Disconnect db
 onStop(function() {
   dbDisconnect(connection)

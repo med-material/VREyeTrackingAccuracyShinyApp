@@ -25,9 +25,20 @@ server = function(input, output) {
       queryBuilder(query_number = 2, target = input$target, participant = input$participant)
     }
   })
+  # Render a circle
+  renderCircle = reactive({
+    if (input$target != "All Targets" && input$participant != "All Participants") {
+      cell = drawCell(target = input$target, participant = input$participant)
+      htmlRenderTarget(cell)
+    }
+  })
   # Output query
   output$ui_query = renderUI({
     render()
+  })
+  # Output circle
+  output$ui_circles = renderUI({
+    renderCircle()
   })
 }
 
