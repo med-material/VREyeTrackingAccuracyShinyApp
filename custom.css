@@ -1,0 +1,22 @@
+.table_setting {
+  border-collapse: separate;
+}
+
+.outer_circle {
+  height: 200px;
+  width: 200px;
+  border-radius:50%;
+  border-style: solid;
+  border-width: 3px;
+  display: table-cell;
+  text-align: center;
+}
+
+.inner_circle {
+  height: 50px;
+  width: 50px;
+  border-radius:50%;
+  background: #FF0000;
+  display: inline-block;
+  vertical-align: middle;
+}

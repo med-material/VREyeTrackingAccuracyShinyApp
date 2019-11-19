@@ -6,6 +6,8 @@ library(RMySQL)
 
 # UI method
 ui = fluidPage(
+  # Include CSS file
+  includeCSS("custom.css"),
   fluidRow(
     # Title
     column(width = 12,
@@ -28,7 +30,8 @@ ui = fluidPage(
     ),
     # Active query
     column(width = 9,
-      uiOutput("ui_query")
+      uiOutput("ui_query"),
+      uiOutput("ui_circles")
     )
   )
 )
