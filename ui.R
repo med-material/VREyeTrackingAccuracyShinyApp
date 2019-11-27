@@ -16,13 +16,13 @@ ui = fluidPage(
            selectInput(
              inputId = "target",
              label = "Targets",
-             choices = c("All Targets", "Other Target"),
+             choices = c("All Targets", getTargets()),
              selected = "All Targets"
            ),
            selectInput(
              inputId = "participant",
              label = "Participant",
-             choices = c("All Participants", "Other Participant"),
+             choices = c("All Participants", getParticipants()),
              selected = "All Participants"
            )
     )
