@@ -15,18 +15,8 @@ ui = fluidPage(
     ),
     # Dropdowns
     column(width = 3,
-           selectInput(
-             inputId = "target",
-             label = "Targets",
-             choices = c("All Targets", getTargets()),
-             selected = "All Targets"
-           ),
-           selectInput(
-             inputId = "participant",
-             label = "Participant",
-             choices = c("All Participants", getParticipants()),
-             selected = "All Participants"
-           )
+           uiOutput("dropdown_targets"),
+           uiOutput("dropdown_participants")
     ),
     # Table for circle
     column(width = 9,
