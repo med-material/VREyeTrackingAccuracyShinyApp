@@ -8,8 +8,12 @@ library(RMySQL)
 server = function(input, output) {
   # Render a circle
   renderCircle = reactive({
+    # 
+    if (is.null(input$target) || is.null(input$participant)) {
+      return("No value availible inside dropdowns.")
+    }
     # Nothing selected
-    if (input$target == "All Targets" && input$participant == "All Participants") {
+    else if (input$target == "All Targets" && input$participant == "All Participants") {
       cell_upper_l = drawCell(target = "UpperLeft")
       cell_upper_c = drawCell(target = "UpperCenter")
       cell_upper_r = drawCell(target = "UpperRight")
@@ -48,6 +52,24 @@ server = function(input, output) {
   # Output circle
   output$ui_circles = renderUI({
     renderCircle()
+  })
+  # Render for Targets dropdown
+  output$dropdown_targets = renderUI({
+    selectInput(
+      inputId = "target",
+      label = "Targets",
+      choices = c("All Targets", getTargets()),
+      selected = "All Targets"
+    )
+  })
+  # Render for Participants dropdown
+  output$dropdown_participants = renderUI({
+    selectInput(
+      inputId = "participant",
+      label = "Participant",
+      choices = c("All Participants", getParticipants()),
+      selected = "All Participants"
+    )
   })
 }
 
