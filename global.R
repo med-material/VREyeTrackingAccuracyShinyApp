@@ -105,24 +105,29 @@ drawCell = function(target = "UpperLeft", participant = "All Participants") {
   } else {
     circle_size = average(queryBuilder(query_number = 2, target = target, participant = participant))
   }
-  circle_size = circle_size * 200
+  # Get sizes of different circles
+  width = circle_size * 200
   circle_max_size = 200
+  # Operations to define circles color
   red_coef = 0.47
   red_max = 254
-  red_color = as.integer(red_coef*(circle_size-circle_max_size)+red_max)
+  red_color = as.integer(red_coef*(width-circle_max_size)+red_max)
   green_coef = -1.025
   green_max = 50
-  green_color = as.integer(green_coef*(circle_size-circle_max_size)+green_max)
+  green_color = as.integer(green_coef*(width-circle_max_size)+green_max)
   blue_coef = 0.245
   blue_max = 49
-  blue_color = as.integer(blue_coef*(circle_size-circle_max_size)+blue_max)
+  blue_color = as.integer(blue_coef*(width-circle_max_size)+blue_max)
   color = paste(red_color, ', ', green_color, ', ', blue_color, sep = '')
   tmp_style = paste('border-color: rgb(', color, '); background-color: rgba(', color, ', 0.2);', sep = '')
   return(
-    tags$td(
-      class = "outer_circle",
-      style = tmp_style,
-      drawCircle(width = circle_size, color = color)
+    tags$div(
+      tags$td(
+        class = "outer_circle",
+        style = tmp_style,
+        showAverage(average = circle_size, margin = width),
+        drawCircle(width = width, color = color)
+      )
     )
   )
 }
@@ -134,6 +139,19 @@ drawCircle = function(width = 1, color = "black") {
     tags$div(
       class = "inner_circle",
       style = tmp_style
+    )
+  )
+}
+
+# Print values of circles
+showAverage = function(average = 1, margin = 0) {
+  margin = 60 + margin / 2
+  tmp_style = paste('margin-top: ', margin, 'px;', sep = '')
+  return(
+    tags$div(
+      class = "average_txt",
+      style = tmp_style,
+      round(average, digits = 2)
     )
   )
 }
