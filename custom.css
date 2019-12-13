@@ -20,3 +20,10 @@
   display: inline-block;
   vertical-align: middle;
 }
+
+.average_txt {
+  position: absolute;
+  width: 200px;
+  font-size: 1.5em;
+  font-weight: bold;
+}
