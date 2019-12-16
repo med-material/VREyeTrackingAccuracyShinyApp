@@ -37,6 +37,18 @@ getParticipants = function() {
   return(tmp_participants)
 }
 
+# Get participant number availible in db
+getConditions = function(participant = NULL) {
+  if (participant == 0) {
+    tmp_query = 'SELECT CustomCondition FROM eye_tracking GROUP BY CustomCondition ORDER BY CustomCondition ASC'
+  } else {
+    tmp_query = paste('SELECT CustomCondition FROM eye_tracking WHERE ParticipantNumber =', participant, 'GROUP BY CustomCondition ORDER BY CustomCondition ASC', sep = ' ')
+  }
+  tmp_conditions = data(tmp_query)
+  tmp_conditions = tmp_conditions[[1]]
+  return(tmp_conditions)
+}
+
 # Query builder, to do all circle queries
 queryBuilder = function(query_number = NULL, target = NULL, participant = NULL) {
   # Basic query
