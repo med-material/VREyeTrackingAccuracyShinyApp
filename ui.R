@@ -16,7 +16,8 @@ ui = fluidPage(
     # Dropdowns
     column(width = 3,
            uiOutput("dropdown_targets"),
-           uiOutput("dropdown_participants")
+           uiOutput("dropdown_participants"),
+           uiOutput("dropdown_conditions")
     ),
     # Table for circle
     column(width = 9,

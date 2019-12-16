@@ -23,7 +23,7 @@ server = function(input, output) {
       cell_bottom_l = drawCell(target = "BottomLeft")
       cell_bottom_c = drawCell(target = "BottomCenter")
       cell_bottom_r = drawCell(target = "BottomRight")
-      htmlRenderTargets(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r)
+      return(htmlRenderTargets(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r))
     }
     # Only participant selected
     else if (input$target == "All Targets") {
@@ -36,17 +36,17 @@ server = function(input, output) {
       cell_bottom_l = drawCell(target = "BottomLeft", participant = input$participant)
       cell_bottom_c = drawCell(target = "BottomCenter", participant = input$participant)
       cell_bottom_r = drawCell(target = "BottomRight", participant = input$participant)
-      htmlRenderTargets(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r)
+      return(htmlRenderTargets(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r))
     }
     # Only target selected
     else if (input$participant == "All Participants") {
       cell = drawCell(target = input$target)
-      htmlRenderTarget(cell)
+      return(htmlRenderTarget(cell))
     }
     # Target and participant selected
     else {
       cell = drawCell(target = input$target, participant = input$participant)
-      htmlRenderTarget(cell)
+      return(htmlRenderTarget(cell))
     }
   })
   # Output circle
@@ -54,7 +54,7 @@ server = function(input, output) {
     renderCircle()
   })
   # Render for Targets dropdown
-  output$dropdown_targets = renderUI({
+  renderTargets = reactive({
     selectInput(
       inputId = "target",
       label = "Targets",
@@ -62,14 +62,43 @@ server = function(input, output) {
       selected = "All Targets"
     )
   })
+  # Output target dropdown
+  output$dropdown_targets = renderUI({
+    renderTargets()
+  })
   # Render for Participants dropdown
-  output$dropdown_participants = renderUI({
+  renderParticipants = reactive({
     selectInput(
       inputId = "participant",
       label = "Participant",
       choices = c("All Participants", getParticipants()),
       selected = "All Participants"
     )
+  })
+  # Output participant dropdown
+  output$dropdown_participants = renderUI({
+    renderParticipants()
+  })
+  # Render a Condition dropdown
+  renderConditions = reactive({
+    if (input$participant == "All Participants" || is.null(input$participant)) {
+      tmp_participant = 0
+    }
+    else {
+      tmp_participant = input$participant
+    }
+    return(
+      selectInput(
+        inputId = "condition",
+        label = "Condition",
+        choices = c("All Conditions", getConditions(participant = tmp_participant)),
+        selected = "All Conditions"
+      )
+    )
+  })
+  # Output condition dropdown
+  output$dropdown_conditions = renderUI({
+    renderConditions()
   })
 }
 
