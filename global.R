@@ -39,7 +39,7 @@ getParticipants = function() {
 
 # Get participant number availible in db
 getConditions = function(participant = NULL) {
-  if (participant == 0) {
+  if (is.null(participant)) {
     tmp_query = 'SELECT CustomCondition FROM eye_tracking GROUP BY CustomCondition ORDER BY CustomCondition ASC'
   } else {
     tmp_query = paste('SELECT CustomCondition FROM eye_tracking WHERE ParticipantNumber =', participant, 'GROUP BY CustomCondition ORDER BY CustomCondition ASC', sep = ' ')
