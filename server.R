@@ -49,10 +49,12 @@ server = function(input, output) {
       return(htmlRenderTarget(cell))
     }
   })
+  
   # Output circle
   output$ui_circles = renderUI({
     renderCircle()
   })
+  
   # Render for Targets dropdown
   renderTargets = reactive({
     selectInput(
@@ -62,10 +64,12 @@ server = function(input, output) {
       selected = "All Targets"
     )
   })
+  
   # Output target dropdown
   output$dropdown_targets = renderUI({
     renderTargets()
   })
+  
   # Render for Participants dropdown
   renderParticipants = reactive({
     selectInput(
@@ -75,32 +79,35 @@ server = function(input, output) {
       selected = "All Participants"
     )
   })
+  
   # Output participant dropdown
   output$dropdown_participants = renderUI({
     renderParticipants()
   })
+  
   # Render a Condition dropdown
   renderConditions = reactive({
     if (input$participant == "All Participants" || is.null(input$participant)) {
-      tmp_participant = 0
+      tmp_participant = NULL
     }
     else {
       tmp_participant = input$participant
     }
     return(
-      selectInput(
+      checkboxGroupInput(
         inputId = "condition",
         label = "Condition",
-        choices = c("All Conditions", getConditions(participant = tmp_participant)),
-        selected = "All Conditions"
+        choices = c(getConditions(participant = tmp_participant))
       )
     )
   })
+  
   # Output condition dropdown
-  output$dropdown_conditions = renderUI({
+  output$checkbox_conditions = renderUI({
     renderConditions()
   })
 }
+
 
 # Initialize server
 shinyServer(server)
