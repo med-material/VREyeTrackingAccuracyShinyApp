@@ -6,48 +6,17 @@ library(RMySQL)
 
 # Server method
 server = function(input, output) {
-  # Render a circle
+  # Render circle
   renderCircle = reactive({
-    # 
-    if (is.null(input$target) || is.null(input$participant)) {
-      return("No value availible inside dropdowns.")
-    }
-    # Nothing selected
-    else if (input$target == "All Targets" && input$participant == "All Participants") {
-      cell_upper_l = drawCell(target = "UpperLeft")
-      cell_upper_c = drawCell(target = "UpperCenter")
-      cell_upper_r = drawCell(target = "UpperRight")
-      cell_middle_l = drawCell(target = "MiddleLeft")
-      cell_middle_c = drawCell(target = "MiddleCenter")
-      cell_middle_r = drawCell(target = "MiddleRight")
-      cell_bottom_l = drawCell(target = "BottomLeft")
-      cell_bottom_c = drawCell(target = "BottomCenter")
-      cell_bottom_r = drawCell(target = "BottomRight")
-      return(htmlRenderTargets(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r))
-    }
-    # Only participant selected
-    else if (input$target == "All Targets") {
-      cell_upper_l = drawCell(target = "UpperLeft", participant = input$participant)
-      cell_upper_c = drawCell(target = "UpperCenter", participant = input$participant)
-      cell_upper_r = drawCell(target = "UpperRight", participant = input$participant)
-      cell_middle_l = drawCell(target = "MiddleLeft", participant = input$participant)
-      cell_middle_c = drawCell(target = "MiddleCenter", participant = input$participant)
-      cell_middle_r = drawCell(target = "MiddleRight", participant = input$participant)
-      cell_bottom_l = drawCell(target = "BottomLeft", participant = input$participant)
-      cell_bottom_c = drawCell(target = "BottomCenter", participant = input$participant)
-      cell_bottom_r = drawCell(target = "BottomRight", participant = input$participant)
-      return(htmlRenderTargets(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r))
-    }
-    # Only target selected
-    else if (input$participant == "All Participants") {
-      cell = drawCell(target = input$target)
-      return(htmlRenderTarget(cell))
-    }
-    # Target and participant selected
-    else {
-      cell = drawCell(target = input$target, participant = input$participant)
-      return(htmlRenderTarget(cell))
-    }
+    # Define paramaters for queries
+    tmp_target = checkTarget(target = input$target)
+    tmp_participant = checkParticipant(participant = input$participant)
+    tmp_condition = checkCondition(condition = input$condition)
+    str_condition = buildStringCondition(condition = tmp_condition)
+    # Get all averages needed to build table in UI
+    averages = getAverages(target = tmp_target, participant = tmp_participant, condition = str_condition)
+    # Build table in UI
+    return(tableBuilder(averages = averages))
   })
   
   # Output circle
