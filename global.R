@@ -49,23 +49,57 @@ getConditions = function(participant = NULL) {
   return(tmp_conditions)
 }
 
-# Query builder, to do all circle queries
-queryBuilder = function(query_number = NULL, target = NULL, participant = NULL) {
+# Check input target value
+checkTarget = function(target = NULL) {
+  tmp_target = if (is.null(target) || target == "All Targets") NULL else target
+  return(tmp_target)
+}
+
+# Check input participant value
+checkParticipant = function(participant = NULL) {
+  tmp_participant = if (is.null(participant) || participant == "All Participants") NULL else participant
+  return(tmp_participant)
+}
+
+# Check input condition value
+checkCondition = function(condition = NULL) {
+  tmp_condition = if (is.null(condition) || condition == "All Conditions") NULL else condition
+  return(tmp_condition)
+}
+
+# Build string part of query for conditions
+buildStringCondition = function(condition = NULL) {
+  str_condition = NULL
+  # Set query with conditions
+  if (!is.null(condition)) {
+    if (length(condition) == 1) {
+      str_condition = condition[1]
+    } else {
+      str_condition = condition[1]
+      for (i in 2:length(condition)) {
+        str_condition = paste(str_condition, '" OR CustomCondition = "', condition[i], sep = '')
+      }
+    }
+  }
+  return(str_condition)
+}
+# Query builder for any average
+queryBuilder = function(query_arg = 1, target = NULL, participant = NULL, condition = NULL) {
   # Basic query
-  tmp_query = paste('SELECT AVG(EyeTrackAccuracy) FROM eye_tracking', sep = ' ')
+  tmp_query = paste('SELECT AVG(EyeTrackAccuracy) FROM eye_tracking', sep = '')
   # Build queries
-  switch(query_number,
-         # Target and no participant , '"BottomCenter"'
+  switch(query_arg,
+         # 1 -> no participant, no condition
          return(paste(tmp_query, ' WHERE CircleName = "', target, '"', sep = '')),
-         # Target and participant
-         return(paste(tmp_query, ' WHERE CircleName = "', target, '" AND ParticipantNumber = ', participant, sep = '')),
-         # No Target and participant
-         return(paste(tmp_query, ' WHERE ParticipantNumber = ', participant, sep = '')),
-         # Default query
+         # 2 -> no participant, condition
+         return(paste(tmp_query, ' WHERE CircleName = "', target, '" AND (CustomCondition = "', condition, '")', sep = '')),
+         # 3 -> participant, no condition
+         return(paste(tmp_query, ' WHERE CircleName = "', target, '" AND Participantnumber = ', participant, sep = '')),
+         # 4 -> participant, condition
+         return(paste(tmp_query, ' WHERE CircleName = "', target, '" AND Participantnumber = ', participant, ' AND (CustomCondition = "', condition, '")', sep = '')),
+         # Default
          return(tmp_query)
   )
-  # Return value
-  return(tmp_query)
 }
 
 # Get average from a query
@@ -74,51 +108,117 @@ average = function(query = NULL) {
   return(tmp_average[["AVG(EyeTrackAccuracy)"]])
 }
 
-# Draw grid target selected
-htmlRenderTarget = function(cell) {
-  return(
-    tags$table(
-      class = "table_setting",
-      tags$tr(
-        cell
-      )
-    )
-  )
-}
-
-# Draw grid no target selected
-htmlRenderTargets = function(cell_upper_l, cell_upper_c, cell_upper_r, cell_middle_l, cell_middle_c, cell_middle_r, cell_bottom_l, cell_bottom_c, cell_bottom_r) {
-  return(
-    tags$table(
-      class = "table_setting",
-      tags$tr(
-        cell_upper_l,
-        cell_upper_c,
-        cell_upper_r
-      ),
-      tags$tr(
-        cell_middle_l,
-        cell_middle_c,
-        cell_middle_r
-      ),
-      tags$tr(
-        cell_bottom_l,
-        cell_bottom_c,
-        cell_bottom_r
-      )
-    )
-  )
-}
-
-# Draw cell from the grid
-drawCell = function(target = "UpperLeft", participant = "All Participants") {
-  if (participant == "All Participants") {
-    circle_size = average(queryBuilder(query_number = 1, target = target))
-  } else {
-    circle_size = average(queryBuilder(query_number = 2, target = target, participant = participant))
+# Return all averages values needed to build table in UI
+getAverages = function(target = NULL, participant = NULL, condition = NULL) {
+  averages = NULL
+  # No target
+  if (is.null(target)) {
+    target_list = c("UpperLeft", "UpperCenter", "UpperRight", "MiddleLeft", "MiddleCenter", "MiddleRight", "BottomLeft", "BottomCenter", "BottomRight")
+    # No participant, no condition
+    if (is.null(participant) && is.null(condition)) {
+      # Get average of each circle in UI
+      for(i in 1:9) {
+        averages[i] = average(query = queryBuilder(query_arg = 1, target = target_list[i]))
+      }
+    }
+    # No participant, condition
+    else if (is.null(participant) && !is.null(condition)) {
+      # Get average of each circle in UI
+      for(i in 1:9) {
+        averages[i] = average(query = queryBuilder(query_arg = 2, target = target_list[i], condition = condition))
+      }
+    }
+    # Participant, no condition
+    else if (!is.null(participant) && is.null(condition)) {
+      # Get average of each circle in UI
+      for(i in 1:9) {
+        averages[i] = average(query = queryBuilder(query_arg = 3, target = target_list[i], participant = participant))
+      }
+    }
+    # Participant, condition
+    else {
+      # Get average of each circle in UI
+      for(i in 1:9) {
+        averages[i] = average(query = queryBuilder(query_arg = 4, target = target_list[i], participant = participant, condition = condition))
+      }
+    }
   }
+  # Target
+  else {
+    # No participant, no condition
+    if (is.null(participant) && is.null(condition)) {
+      # Get average of circle in UI
+      averages[1] = average(query = queryBuilder(query_arg = 1, target = target))
+    }
+    # No participant, condition
+    else if (is.null(participant) && !is.null(condition)) {
+      # Get average of each circle in UI
+      averages[1] = average(query = queryBuilder(query_arg = 2, target = target, condition = condition))
+    }
+    # Participant, no condition
+    else if (!is.null(participant) && is.null(condition)) {
+      # Get average of each circle in UI
+      averages[1] = average(query = queryBuilder(query_arg = 3, target = target, participant = participant))
+    }
+    # Participant, condition
+    else {
+      # Get average of each circle in UI
+      averages[1] = average(query = queryBuilder(query_arg = 4, target = target, participant = participant, condition = condition))
+    }
+  }
+  return(averages)
+}
+
+# Builder for a table in HTML page
+tableBuilder = function(averages = NULL) {
+  return(
+    tags$table(
+      class = "table_setting",
+      rowBuilder(averages = averages)
+    )
+  )
+}
+
+# Builder for rows in table in HTML page
+rowBuilder = function(averages = NULL) {
+  # Check if only target is selected
+  if (length(averages) == 1) {
+    return(
+      tags$div(
+        tags$tr(
+          cellBuilder(average = averages[1])
+        )
+      )
+    )
+  }
+  # Then all targets are selected
+  else {
+    return(
+      tags$div(
+        tags$tr(
+          cellBuilder(average = averages[1]),
+          cellBuilder(average = averages[2]),
+          cellBuilder(average = averages[3])
+        ),
+        tags$tr(
+          cellBuilder(average = averages[4]),
+          cellBuilder(average = averages[5]),
+          cellBuilder(average = averages[6])
+        ),
+        tags$tr(
+          cellBuilder(average = averages[7]),
+          cellBuilder(average = averages[8]),
+          cellBuilder(average = averages[9])
+        )
+      )
+    )
+  }
+}
+
+# Builder for cell of table rows in HTML page
+cellBuilder = function(average = NULL) {
   # Get sizes of different circles
-  width = circle_size * 200
+  width = average * 200
   circle_max_size = 200
   # Operations to define circles color
   red_coef = 0.47
@@ -133,13 +233,11 @@ drawCell = function(target = "UpperLeft", participant = "All Participants") {
   color = paste(red_color, ', ', green_color, ', ', blue_color, sep = '')
   tmp_style = paste('border-color: rgb(', color, '); background-color: rgba(', color, ', 0.2);', sep = '')
   return(
-    tags$div(
-      tags$td(
-        class = "outer_circle",
-        style = tmp_style,
-        showAverage(average = circle_size, margin = width),
-        drawCircle(width = width, color = color)
-      )
+    tags$td(
+      class = "outer_circle",
+      style = tmp_style,
+      showAverage(average = average, margin = width),
+      drawCircle(width = width, color = color)
     )
   )
 }
